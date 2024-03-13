@@ -1,4 +1,4 @@
-// index.js
+// index.js --DIMITIR
 // where your node app starts
 
 // init project
@@ -23,6 +23,46 @@ app.get("/", function (req, res) {
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
+
+
+app.get("/api/:date?", function (req, res) {
+
+  let parsedDate=null;
+  const errorMsg = {error: "Invalid Date"}
+
+  if (req.params.date == null) {
+    console.log("01");
+    parsedDate = new Date();
+  } 
+
+  else if (req.params.date.length > 10) {
+    console.log("03");
+    parsedDate = new Date(parseInt(req.params.date)).getTime()
+  } else {
+    console.log("04");
+     parsedDate = new Date(req.params.date).getTime();
+  }
+
+  console.log(parsedDate);
+  console.log(typeof parsedDate);
+
+ const options = {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false, // Use 24-hour format
+    timeZone: 'UTC'  // Format in UTC
+  };
+
+
+  const utcDate = new Date(parsedDate).toLocaleDateString('en-ZA', options) + ' GMT';
+  const dateObject = {unix:parsedDate, utc:utcDate};
+  res.json(dateObject);
+} );
 
 
 
