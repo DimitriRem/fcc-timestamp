@@ -27,24 +27,40 @@ app.get("/api/hello", function (req, res) {
 
 app.get("/api/:date?", function (req, res) {
 
+  console.log(".get Start");
+  const dateEntered= req.params.date;
   let parsedDate=null;
+  let stdDate=null;
   const errorMsg = {error: "Invalid Date"}
 
   if (req.params.date == null) {
-    console.log("01");
-    parsedDate = new Date();
+    console.log("01 - null value");
+    parsedDate = new Date().getTime();
+    stdDate = new Date();
   } 
 
   else if (req.params.date.length > 10) {
-    console.log("03");
-    parsedDate = new Date(parseInt(req.params.date)).getTime()
+    console.log("03 - unix date entered");
+    parsedDate = new Date(parseInt(req.params.date)).getTime();
+    stdDate = new Date(parseInt(req.params.date));
+    console.log("03.5 p:"+parsedDate+" std: "+stdDate);
   } else {
-    console.log("04");
+    console.log("04 - std date entered");
      parsedDate = new Date(req.params.date).getTime();
+     stdDate = new Date(req.params.date);
+     if (!isNaN(parsedDate)) { 
+     console.log("04.5 date ok " + parsedDate) } else {
+     console.log("04.5 date kak " + parsedDate)
+     return res.json(errorMsg);};
+    
   }
 
-  console.log(parsedDate);
-  console.log(typeof parsedDate);
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+const utcDate = `${days[stdDate.getUTCDay()]}, ${stdDate.getUTCDate()} ${months[stdDate.getUTCMonth()]} ${stdDate.getUTCFullYear()} ${('0' + stdDate.getUTCHours()).slice(-2)}:${('0' + stdDate.getUTCMinutes()).slice(-2)}:${('0' + stdDate.getUTCSeconds()).slice(-2)} GMT`;
+
+  // 
 
  const options = {
     weekday: 'short',
@@ -59,7 +75,7 @@ app.get("/api/:date?", function (req, res) {
   };
 
 
-  const utcDate = new Date(parsedDate).toLocaleDateString('en-ZA', options) + ' GMT';
+  // const utcDate = new Date(parsedDate).toLocaleDateString('en-ZA', options) + ' GMT';
   const dateObject = {unix:parsedDate, utc:utcDate};
   res.json(dateObject);
 } );
